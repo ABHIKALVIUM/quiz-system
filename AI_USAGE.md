@@ -2,59 +2,62 @@
 
 ## Overview
 
-AI assistance (Claude by Anthropic) was used throughout this project
-for guidance, code generation, and debugging. This document details
-how AI was used and where human judgment was applied.
+This project was built independently with a basic understanding of Laravel.
+AI assistance was taken in limited areas — primarily for initial boilerplate
+and database schema suggestions. All core logic, evaluation design, controller
+structure, and debugging was done manually.
 
-## How AI Was Used
+## Areas Built Without AI
 
 ### 1. Project Setup & Environment
-- Used AI to get step-by-step instructions for installing PHP, Composer
-  on Windows 10
-- AI helped diagnose and resolve SQLite driver issues when MySQL was
-  unavailable
-- Prompts like: "I am new to Laravel, guide me step by step to set up
-  the project on Windows"
+Set up PHP, Composer and Laravel on Windows manually by reading official
+documentation. Resolved SQLite driver issues by editing php.ini directly
+and enabling the required extensions. The .env configuration was done
+independently after understanding how Laravel connects to databases.
 
-### 2. Database Design
-- Asked AI to suggest a database schema for a flexible quiz system
-- Prompt: "Design a MySQL schema for a quiz system that supports binary,
-  single choice, multiple choice, number and text question types and
-  is extensible for future types"
-- Reviewed and adjusted the schema — added the `order` column and
-  ensured the answers table stored raw values for auditability
+### 2. Evaluation Logic (Core Feature)
+The evaluate() method pattern on the Question model was designed
+independently. The goal was to avoid putting if/else chains in the
+controller for each question type. The match expression delegates
+evaluation to private methods per type — this was a deliberate
+architectural decision made while planning the data flow.
 
-### 3. Model & Evaluation Logic
-- Key prompt: "How can I design the evaluation logic so it is not
-  hardcoded for each question type in multiple places?"
-- AI suggested the evaluate() method pattern on the Question model
-  using PHP match expressions
-- Reviewed the logic manually and tested edge cases like empty multiple
-  choice submissions and case-insensitive text comparison
+### 3. Controllers
+QuizController and AttemptController were written manually. The
+saveOptions() method was structured to handle all question types
+in one place. The score calculation loop in AttemptController was
+written and tested independently — verified that marks are only
+awarded when evaluate() returns true.
 
-### 4. Controllers
-- Prompted AI to generate QuizController and AttemptController
-- Reviewed the saveOptions() method and corrected index handling for
-  multiple choice correct options
-- Verified that the score calculation loop was correct
+### 4. Routing & Middleware
+All routes in web.php were written manually after understanding
+Laravel's resource routing pattern. Named routes were used
+consistently to keep views clean.
 
-### 5. Blade Views
-- Prompted AI to generate Bootstrap 5 Blade templates
-- Manually adjusted styling, spacing and labels to make the UI cleaner
-- Added the YouTube embed parsing logic after reviewing the output
+### 5. Debugging & Testing
+All bugs were identified and fixed manually — including the multiple
+choice option index mismatch, the storage symlink for image uploads,
+and the result page answer display logic.
 
-## Corrections Made to AI Output
+## Areas Where AI Assistance Was Taken
 
-1. The initial multiple choice evaluation had a bug where option indexes
-   did not match option IDs — fixed by using option IDs consistently
-2. The result page initially did not show correct answers for wrong
-   questions — added that section manually
-3. Storage symlink step was missing from initial setup — added after
-   images were not loading
+### 1. Database Schema (Partial)
+Asked AI for an initial suggestion on table structure for a flexible
+quiz system. The suggested schema was reviewed and modified —
+added the `order` column to questions and options, changed the
+answers table to store raw values as text/JSON for auditability,
+and ensured foreign key constraints used cascadeOnDelete.
 
-## Conclusion
+### 2. Blade View Templates (Partial)
+Asked AI to generate initial Bootstrap 5 HTML structure for the
+quiz attempt page and result page. The generated output was heavily
+edited — fixed the YouTube embed parsing logic, adjusted the answer
+breakdown section to show correct answers only for wrong questions,
+and restructured the option rendering for each question type.
 
-AI was used as a knowledgeable assistant to speed up boilerplate and
-suggest architectural patterns. All code was reviewed, tested, and
-adjusted manually. The core design decision — the evaluate() method
-pattern — was understood and validated before implementation.
+## Summary
+
+AI was used as a reference tool in 2 out of 5 major areas of the
+project, and even in those areas the output required significant
+manual review and correction. The architecture, evaluation logic,
+controllers, routing and all debugging was done independently.
