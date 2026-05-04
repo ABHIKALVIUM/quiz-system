@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: quiz-system
+    runtime: php
+    buildCommand: composer install --optimize-autoloader --no-dev --no-interaction
+    startCommand: php artisan migrate --force && php artisan storage:link && php artisan serve --host=0.0.0.0 --port=$PORT
+    envVars:
+      - key: APP_KEY
+        value: base64:lWFDjVhsQnAacAXOfCMXcYNc9alKbMk5K9feI0+UVWc=
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: false
+      - key: DB_CONNECTION
+        value: sqlite
+      - key: SESSION_DRIVER
+        value: file
+      - key: CACHE_STORE
+        value: file
